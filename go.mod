@@ -1,4 +1,4 @@
-module github.com/terraform-linters/tflint-ruleset-template
+module github.com/richardTowers/tflint-ruleset-workspaces
 
 go 1.15
 
