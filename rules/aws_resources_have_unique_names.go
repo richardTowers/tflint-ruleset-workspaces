@@ -41,7 +41,7 @@ func (r *AwsResourcesHaveUniqueNamesRule) Check(runner tflint.Runner) error {
 		err := runner.EvaluateExpr(attribute.Expr, &name, nil)
 
 		return runner.EnsureNoError(err, func() error {
-			if !strings.Contains(name, "workspace") {
+			if !strings.Contains(name, "default") {
 				_ = runner.EmitIssue(
 					r,
 					fmt.Sprintf(`Resource name "%s" does not include the workspace`, name),

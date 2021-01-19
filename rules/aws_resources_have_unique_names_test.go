@@ -19,7 +19,7 @@ func Test_AwsS3BucketName(t *testing.T) {
 			Name: "s3_bucket_without_workspace_prefixed_name",
 			Content: `
 resource "aws_s3_bucket" "good" {
-  bucket = "${terraform.workspace}-bucket" # TODO this causes the test framework to bork - looks like it needs a patch to be workspace aware
+  bucket = "${terraform.workspace}-bucket"
 }
 resource "aws_s3_bucket" "bad" {
 	bucket = "no-workspace-bucket"
@@ -35,7 +35,7 @@ rule "aws_s3_bucket_name" {
 					Range: hcl.Range{
 						Filename: "resource.tf",
 						Start:    hcl.Pos{Line: 6, Column: 11},
-						End:      hcl.Pos{Line: 6, Column: 23},
+						End:      hcl.Pos{Line: 6, Column: 32},
 					},
 				},
 			},
