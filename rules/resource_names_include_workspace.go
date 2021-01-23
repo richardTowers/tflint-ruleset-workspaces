@@ -8,19 +8,17 @@ import (
 	"strings"
 )
 
-type ResourceNamesIncludeWorkspace struct{
+type ResourceNamesIncludeWorkspace struct {
 	resourceType string
 	attributeName string
+	overrideWorkspace string
 }
 
-type resourceNamesIncludeWorkspaceRuleConfig struct {
-	OverrideWorkspace string `hcl:"overrideWorkspace,optional"`
-}
-
-func NewResourceNamesIncludeWorkspaceRule(resourceType, attributeName string) *ResourceNamesIncludeWorkspace {
+func NewResourceNamesIncludeWorkspaceRule(resourceType, attributeName, overrideWorkspace string) *ResourceNamesIncludeWorkspace {
 	return &ResourceNamesIncludeWorkspace{
 		resourceType: resourceType,
 		attributeName: attributeName,
+		overrideWorkspace: overrideWorkspace,
 	}
 }
 
@@ -41,10 +39,6 @@ func (r *ResourceNamesIncludeWorkspace) Link() string {
 }
 
 func (r *ResourceNamesIncludeWorkspace) Check(runner tflint.Runner) error {
-	config := resourceNamesIncludeWorkspaceRuleConfig{}
-	if err := runner.DecodeRuleConfig(r.Name(), &config); err != nil {
-		return err
-	}
 	originalWorkspace, envWasSet := os.LookupEnv("TERRAFORM_WORKSPACE")
 	defer func() {
 		if envWasSet {
@@ -58,10 +52,15 @@ func (r *ResourceNamesIncludeWorkspace) Check(runner tflint.Runner) error {
 	if originalWorkspace != "" {
 		tempWorkspace = originalWorkspace
 	}
-	if config.OverrideWorkspace != "" {
-		tempWorkspace = config.OverrideWorkspace
+	if r.overrideWorkspace != "" {
+		tempWorkspace = r.overrideWorkspace
 	}
 	_ = os.Setenv("TERRAFORM_WORKSPACE", tempWorkspace)
+
+	attributeName := r.attributeName
+	if attributeName == "" {
+		attributeName = "name"
+	}
 	return runner.WalkResourceAttributes(r.resourceType, r.attributeName, func(attribute *hcl.Attribute) error {
 		var name string
 		err := runner.EvaluateExpr(attribute.Expr, &name, nil)
