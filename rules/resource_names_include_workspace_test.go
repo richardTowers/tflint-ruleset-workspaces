@@ -25,13 +25,14 @@ resource "aws_s3_bucket" "bad" {
 	bucket = "no-workspace-bucket"
 }`,
 			Config: `
-rule "aws_s3_bucket_name" {
+rule "aws_s3_bucket_name_includes_workspace" {
 	enabled = true
+	overrideWorkspace = "overridden_workspace"
 }`,
 			Expected: helper.Issues{
 				{
-					Rule:    NewAwsResourcesHaveUniqueNamesRule("aws_s3_bucket", "bucket"),
-					Message: `Resource name "no-workspace-bucket" does not include the workspace`,
+					Rule:    NewResourceNamesIncludeWorkspaceRule("aws_s3_bucket", "bucket"),
+					Message: `aws_s3_bucket resource name "no-workspace-bucket" does not include the workspace (overridden_workspace)`,
 					Range: hcl.Range{
 						Filename: "resource.tf",
 						Start:    hcl.Pos{Line: 6, Column: 11},
@@ -42,7 +43,7 @@ rule "aws_s3_bucket_name" {
 		},
 	}
 
-	rule := NewAwsResourcesHaveUniqueNamesRule("aws_s3_bucket", "bucket")
+	rule := NewResourceNamesIncludeWorkspaceRule("aws_s3_bucket", "bucket")
 
 	for _, tc := range cases {
 		tc := tc

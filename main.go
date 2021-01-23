@@ -12,8 +12,8 @@ func main() {
 			Name:    "workspaces",
 			Version: "0.1.0",
 			Rules: []tflint.Rule{
-				rules.NewAwsResourcesHaveUniqueNamesRule("aws_s3_bucket", "bucket"),
-				rules.NewAwsResourcesHaveUniqueNamesRule("aws_security_group", "name"),
+				rules.NewResourceNamesIncludeWorkspaceRule("aws_s3_bucket", "bucket"),
+				rules.NewResourceNamesIncludeWorkspaceRule("aws_security_group", "name"),
 			},
 		},
 	})
