@@ -1,5 +1,5 @@
 # TFLint Ruleset Workspaces
-[![Build Status](https://github.com/terraform-linters/tflint-ruleset-template/workflows/build/badge.svg?branch=master)](https://github.com/terraform-linters/tflint-ruleset-template/actions)
+[![Build Status](https://github.com/richardTowers/tflint-ruleset-workspaces/workflows/build/badge.svg?branch=master)](https://github.com/richardTowers/tflint-ruleset-workspaces/actions)
 
 This custom ruleset checks that resource names are uniquely namespaced by workspaces. It's useful if you're using [terraform workspaces](https://www.terraform.io/docs/state/workspaces.html)
 to deploy multiple instances of the same configuration.
