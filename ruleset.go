@@ -26,6 +26,9 @@ type RuleSet struct {
 
 func (r *RuleSet) RuleNames() []string {
 	result := []string{}
+	for _, rule := range r.rules() {
+		result = append(result, rule.Name())
+	}
 	return result
 }
 
