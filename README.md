@@ -11,7 +11,7 @@ to deploy multiple instances of the same configuration.
 
 ## Installation
 
-Download the plugin and place it in `~/.tflint.d/plugins/tflint-ruleset-template` (or `./.tflint.d/plugins/tflint-ruleset-template`). When using the plugin, configure as follows in `.tflint.hcl`:
+Download the plugin and place it in `~/.tflint.d/plugins/tflint-ruleset-workspaces` (or `./.tflint.d/plugins/tflint-ruleset-workspaces`). When using the plugin, configure as follows in `.tflint.hcl`:
 
 ```hcl
 plugin "workspaces" {
