@@ -6,7 +6,7 @@ to deploy multiple instances of the same configuration.
 
 ## Requirements
 
-- TFLint v0.23+
+- TFLint v0.24+
 - Go v1.15
 
 ## Installation
