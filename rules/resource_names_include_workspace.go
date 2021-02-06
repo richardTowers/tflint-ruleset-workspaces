@@ -11,14 +11,12 @@ import (
 type ResourceNamesIncludeWorkspace struct {
 	resourceType string
 	attributeName string
-	overrideWorkspace string
 }
 
-func NewResourceNamesIncludeWorkspaceRule(resourceType, attributeName, overrideWorkspace string) *ResourceNamesIncludeWorkspace {
+func NewResourceNamesIncludeWorkspaceRule(resourceType, attributeName string) *ResourceNamesIncludeWorkspace {
 	return &ResourceNamesIncludeWorkspace{
 		resourceType: resourceType,
 		attributeName: attributeName,
-		overrideWorkspace: overrideWorkspace,
 	}
 }
 
@@ -39,23 +37,10 @@ func (r *ResourceNamesIncludeWorkspace) Link() string {
 }
 
 func (r *ResourceNamesIncludeWorkspace) Check(runner tflint.Runner) error {
-	originalWorkspace, envWasSet := os.LookupEnv("TERRAFORM_WORKSPACE")
-	defer func() {
-		if envWasSet {
-			_ = os.Setenv("TERRAFORM_WORKSPACE", originalWorkspace)
-		} else {
-			_ = os.Unsetenv("TERRAFORM_WORKSPACE")
-		}
-	}()
-
-	tempWorkspace := "default"
-	if originalWorkspace != "" {
-		tempWorkspace = originalWorkspace
+	workspace, success := os.LookupEnv("TF_WORKSPACE")
+	if !success {
+		workspace = "default"
 	}
-	if r.overrideWorkspace != "" {
-		tempWorkspace = r.overrideWorkspace
-	}
-	_ = os.Setenv("TERRAFORM_WORKSPACE", tempWorkspace)
 
 	attributeName := r.attributeName
 	if attributeName == "" {
@@ -66,10 +51,10 @@ func (r *ResourceNamesIncludeWorkspace) Check(runner tflint.Runner) error {
 		err := runner.EvaluateExpr(attribute.Expr, &name, nil)
 
 		return runner.EnsureNoError(err, func() error {
-			if !strings.Contains(name, tempWorkspace) {
+			if !strings.Contains(name, workspace) {
 				_ = runner.EmitIssueOnExpr(
 					r,
-					fmt.Sprintf(`%s resource name "%s" does not include the workspace (%s)`, r.resourceType, name, tempWorkspace),
+					fmt.Sprintf(`%s resource name "%s" does not include the workspace (%s)`, r.resourceType, name, workspace),
 					attribute.Expr,
 				)
 			}

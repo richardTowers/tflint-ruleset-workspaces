@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"os"
 	"testing"
 
 	hcl "github.com/hashicorp/hcl/v2"
@@ -8,7 +9,7 @@ import (
 )
 
 func Test_AwsS3BucketName(t *testing.T) {
-	rule := NewResourceNamesIncludeWorkspaceRule("aws_s3_bucket", "bucket", "overridden_workspace")
+	rule := NewResourceNamesIncludeWorkspaceRule("aws_s3_bucket", "bucket")
 
 	content := `
 resource "aws_s3_bucket" "good" {
@@ -20,6 +21,15 @@ resource "aws_s3_bucket" "bad" {
 `
 
 	t.Run("s3_bucket_without_workspace_prefixed_name", func(t *testing.T) {
+		_ = os.Setenv("TF_WORKSPACE", "overridden_workspace")
+		// TODO remove once https://github.com/terraform-linters/tflint-plugin-sdk/pull/101 is merged:
+		_ = os.Setenv("TERRAFORM_WORKSPACE", "overridden_workspace")
+
+		defer func(){
+			_ = os.Unsetenv("TF_WORKSPACE")
+			_ = os.Unsetenv("TERRAFORM_WORKSPACE")
+		}()
+
 		runner := helper.TestRunner(t, map[string]string{"resource.tf": content, ".tflint.hcl": ""})
 
 		err := rule.Check(runner)
@@ -29,7 +39,7 @@ resource "aws_s3_bucket" "bad" {
 
 		helper.AssertIssues(t, helper.Issues{
 			{
-				Rule:    NewResourceNamesIncludeWorkspaceRule("aws_s3_bucket", "bucket", "overridden_workspace"),
+				Rule:    NewResourceNamesIncludeWorkspaceRule("aws_s3_bucket", "bucket"),
 				Message: `aws_s3_bucket resource name "no-workspace-bucket" does not include the workspace (overridden_workspace)`,
 				Range: hcl.Range{
 					Filename: "resource.tf",

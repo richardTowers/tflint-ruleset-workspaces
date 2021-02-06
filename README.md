@@ -28,7 +28,6 @@ This allows each project to configure which resources should be namespaced by `$
 ```hcl
 plugin "workspaces" {
   enabled            = true
-  override_workspace = "xxxx"
 
   resource "aws_s3_bucket" {
     attribute = "bucket"
@@ -43,7 +42,8 @@ One rule will be created for each configured `resource`.
 
 `attribute` specifies the attribute which needs to include the workspace - e.g. for S3 buckets this should be "bucket", for security groups it should be "name" (assuming you have multiple workspaces in the same VPC, otherwise namespacing your security groups is not needed). Defaults to `name`.
 
-`override_workspace` forces tflint to use a non-default workspace for this plugin. This is useful if you treat the default workspace as a special case (e.g. with `name = terrafrom.workspace == "default" ? "blah" : "${terraform.workspace}_blah"`)
+To test a non-default workspace, set the [`TF_WORKSPACE`](https://www.terraform.io/docs/cli/config/environment-variables.html#tf_workspace)
+environment variable when running tflint. This is useful if you treat the default workspace as a special case (e.g. with `name = terrafrom.workspace == "default" ? "blah" : "${terraform.workspace}_blah"`)
 
 ## Building the plugin
 

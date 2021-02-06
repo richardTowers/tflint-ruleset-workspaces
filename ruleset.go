@@ -15,7 +15,6 @@ type ResourceConfig struct {
 
 type Config struct {
 	Resources         []ResourceConfig `hcl:"resource,block"`
-	OverrideWorkspace string           `hcl:"override_workspace,optional"`
 	Remain hcl.Body `hcl:",remain"`
 }
 
@@ -38,7 +37,6 @@ func (r *RuleSet) rules() []*rules.ResourceNamesIncludeWorkspace {
 		rule := rules.NewResourceNamesIncludeWorkspaceRule(
 			resource.Resource,
 			resource.AttributeName,
-			r.config.OverrideWorkspace,
 		)
 		result = append(result, rule)
 	}
